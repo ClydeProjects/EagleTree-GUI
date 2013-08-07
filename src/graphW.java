@@ -1,11 +1,15 @@
 import java.awt.EventQueue;
+import java.awt.Font;
 
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 
 
 public class graphW {
 
-	JFrame frmEagle;
+	private JFrame frmEagle;
+	private String graphName;
 
 	/**
 	 * Launch the application.
@@ -14,7 +18,7 @@ public class graphW {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					graphW window = new graphW();
+					graphW window = new graphW("");
 					window.frmEagle.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -26,8 +30,12 @@ public class graphW {
 	/**
 	 * Create the application.
 	 */
-	public graphW() {
+	public graphW(String graphName) {
+		this.graphName = graphName;
+		
+		System.out.println(graphName);
 		initialize();
+		frmEagle.setVisible(true);
 	}
 
 	/**
@@ -36,8 +44,18 @@ public class graphW {
 	private void initialize() {
 		frmEagle = new JFrame();
 		frmEagle.setTitle("EAGLE TREE - Graphs");
-		frmEagle.setBounds(100, 100, 450, 300);
+		int length = (int)(450 * 1.5);
+		int height = (int)(300 * 1.5);
+		frmEagle.setBounds(100, 100, length, height);
 		frmEagle.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		
+		JButton btnNewButton = new JButton("");
+		btnNewButton.setOpaque(true);
+		btnNewButton.setRequestFocusEnabled(false);
+		btnNewButton.setFont(new Font("Lucida Grande", Font.PLAIN, 5));
+		btnNewButton.setIcon(new ImageIcon(graphName));
+		//btnNewButton.setBounds(6, 265, 938, 187);
+		frmEagle.getContentPane().add(btnNewButton);
 	}
 
 }

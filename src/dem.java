@@ -1,3 +1,4 @@
+import java.awt.Component;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -15,6 +16,7 @@ import javax.swing.JSplitPane;
 
 import java.awt.BorderLayout;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JCheckBox;
 import javax.swing.JInternalFrame;
 import javax.swing.UIManager;
@@ -51,16 +53,9 @@ import javax.swing.ImageIcon;
 import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-
 import java.io.*;
 import java.util.*;
+import java.awt.Button;
 
 public class dem {
 
@@ -101,9 +96,21 @@ public class dem {
 	private JCheckBox chckbxTemperatures; 
 	private JCheckBox chckbxLocality ;
 	private JList list;
+	private JList list_1;
+	private JList list_2;
+	private JList list_3;
+	private JList list_4;
+	private JList list_5;
+	private DefaultListModel channelData;
+	private DefaultListModel lunData;
+	private DefaultListModel threadReads;
+	private DefaultListModel threadWrites;
+	//private JTextField channelUtilField;
 	
-	final private static String eagleTreeExecutable = "../EagleTree/Experiments/config_loader";
+	final private static String eagleTreeExecutable = "../EagleTree/Experiments/";
 	final private static String srcLocation = "/home/niv/Desktop/GUI_eagle_tree/src/configuration.txt";
+	final private static String resultsLocation = "/home/niv/Desktop/GUI_eagle_tree/src/";
+	private String executableName = "interleaving";
 	
 	/**
 	 * Launch the application.
@@ -126,6 +133,203 @@ public class dem {
 	 */
 	public dem() {
 		initialize();
+	}
+	
+	public void loadConfig() {
+		if (list_1.getSelectedValue() != null) {
+			String chosenConfig = list_1.getSelectedValue().toString();
+			System.out.println("hello " + chosenConfig);
+			
+			if (chosenConfig.compareTo("Split reads") == 0) {
+				comboBox_2.setSelectedIndex(0);  // fifo ssd scheduler
+				comboBox_1.setSelectedIndex(0);  // this is the interleaving thing
+				comboBox_3.setSelectedIndex(0);  // shortest queues
+				list.setSelectedIndex(0);  		 // FIFO OS scheduler
+				chckbxLocality.setSelected(false);
+				executableName = "interleaving";
+			}
+			else if (chosenConfig.compareTo("Don't split reads") == 0) {
+				comboBox_2.setSelectedIndex(0);  // fifo ssd scheduler
+				comboBox_1.setSelectedIndex(1);  // this is the interleaving thing
+				comboBox_3.setSelectedIndex(0);  // shortest queues
+				list.setSelectedIndex(0);  		 // FIFO OS scheduler
+				chckbxLocality.setSelected(false);
+				executableName = "interleaving";
+			}
+			else if (chosenConfig.compareTo("FIFO") == 0) {
+				comboBox_2.setSelectedIndex(0);  // fifo ssd scheduler
+				comboBox_1.setSelectedIndex(0);  // this is the interleaving thing
+				comboBox_3.setSelectedIndex(0);  // shortest queues
+				list.setSelectedIndex(0);  		 // FIFO OS scheduler
+				chckbxLocality.setSelected(false);
+				executableName = "deadlines";
+			}
+			else if (chosenConfig.compareTo("File System") == 0) {
+				comboBox_2.setSelectedIndex(0);  // fifo ssd scheduler
+				comboBox_1.setSelectedIndex(0);  // this is the interleaving thing
+				comboBox_3.setSelectedIndex(0);  // shortest queues
+				list.setSelectedIndex(1);  		 // FIFO OS scheduler
+				chckbxLocality.setSelected(false);
+				executableName = "sequential";
+			}
+			else if (chosenConfig.compareTo("File System & Tagging") == 0) {
+				comboBox_2.setSelectedIndex(0);  // fifo ssd scheduler
+				comboBox_1.setSelectedIndex(0);  // this is the interleaving thing
+				comboBox_3.setSelectedIndex(2);  // shortest queues
+				list.setSelectedIndex(1);  		 // FIFO OS scheduler
+				chckbxLocality.setSelected(true);
+				executableName = "sequential";
+			}
+		}
+	}
+	
+	private int readInt(String line) {
+		line = line.replaceAll( "[^\\d]", "" );
+		return Integer.parseInt(line);
+	}
+	
+	private double readDouble(String line) {
+		line = line.split(":")[1].trim();
+		//line = line.replaceAll( "[^\\d]", "" );
+		return Double.parseDouble(line);
+	}
+	
+	private void loadResultsEntry(String line) {
+		if (line.startsWith("num writes:")) {					
+			int val = readInt(line);
+			System.out.println("num writes: " + val);
+		}
+		else if (line.startsWith("avg writes latency:")) {			// YES
+			int val = (int)readDouble(line);
+			txts_3.setText(val + "");
+			System.out.println("avg writes latency: " + val);
+		}
+		else if (line.startsWith("std writes latency:")) {			// YES
+			int val = (int)readDouble(line);
+			txts_4.setText(val + "");
+			System.out.println("std writes latency: " + val);
+		}
+		else if (line.startsWith("max writes latency:")) {			// YES
+			int val = (int)readDouble(line);
+			txts_5.setText(val + "");
+			System.out.println("max writes latency: " + val);
+		}
+		
+		else if (line.startsWith("num reads:")) {
+			int val = readInt(line);
+			System.out.println("num reads: " + val);
+		}
+		else if (line.startsWith("avg reads latency:")) {			// YES
+			int val = (int)readDouble(line);
+			txts.setText(val + "");
+			System.out.println("avg reads latency: " + val);
+		}
+		else if (line.startsWith("std reads latency:")) {			// YES
+			int val = (int)readDouble(line);
+			txts_1.setText(val + "");
+			System.out.println("avg reads latency: " + val);
+		}
+		else if (line.startsWith("max reads latency:")) {			// YES
+			int val = (int)readDouble(line);
+			txts_2.setText(val + "");
+			System.out.println("avg reads latency: " + val);
+		}
+		else if (line.startsWith("total throughput:")) {
+			double val = readInt(line);
+			String txt = "All:" + val + "- ";
+			txtReadMbs.setText(txt);
+			//System.out.println("total throughput: " + val);
+		}
+		else if (line.startsWith("read throughput:")) {
+			double val = readInt(line);
+			String txt = txtReadMbs.getText() + "Read:" + val + "- ";
+  			txtReadMbs.setText(txt);
+		}
+		else if (line.startsWith("writes throughput:")) {
+			double val = readInt(line);
+			String txt = txtReadMbs.getText() + "Write:" + val;
+			txtReadMbs.setText(txt);
+		}
+
+		else if (line.startsWith("channel util:")) {
+			double val = readInt(line);
+			System.out.println("channel util: " + val);
+		}
+		else if (line.startsWith("LUN util:")) {
+			double val = readInt(line);
+			System.out.println("LUN util: " + val);
+		}
+		
+		else if (line.startsWith("Channel util for package ")) {
+			double val = readDouble(line);
+			int id = channelData.size() + 1;
+			String str = "#" + id + ": " + val;
+			channelData.addElement(str);
+		}
+		else if (line.startsWith("LUN util for LUN")) {
+			double val = readDouble(line);
+			int id = lunData.size() + 1;
+			String str = "#" + id + ": " + val;
+			lunData.addElement(str);
+		}
+		else if (line.startsWith("Thread reads")) {
+			int reads = readInt(line);
+			int id = threadReads.size() + 1;
+			threadReads.addElement("#" + id + ": " + reads);
+		}
+		else if (line.startsWith("Thread writes")) {
+			int writes = readInt(line);
+			int id = threadWrites.size() + 1;
+			threadWrites.addElement("#" + id + ": " + writes);
+		}
+		else if (line.startsWith("num gc reads:")) {
+			int gcReads = readInt(line);
+			String txt = "Read:" + gcReads + " - ";
+			txtRead.setText(txt);
+		}
+		else if (line.startsWith("num gc writes")) {
+			int gcWrites = readInt(line);
+			String txt = txtRead.getText() + "Write:" + gcWrites + " - ";
+ 			txtRead.setText(txt);
+		} 
+		else if (line.startsWith("num erases")) {
+			int erases = readInt(line);
+			String txt = txtRead.getText() + "Erase:" + erases;
+			txtRead.setText(txt);
+		}
+	}
+	
+	private void loadResults() {
+		System.out.println("load res");
+		FileReader fr;
+		try {
+			fr = new FileReader("src/results.txt");
+			BufferedReader br = new BufferedReader(fr);
+			String line = br.readLine();
+			list_2.removeAll();
+			list_3.removeAll();
+			list_4.removeAll();
+			list_5.removeAll();
+			txtRead.setText("");
+			txtReadMbs.setText("");
+			channelData = new DefaultListModel();
+			lunData = new DefaultListModel();
+			threadReads = new DefaultListModel();
+			threadWrites = new DefaultListModel();
+			while (line != null) {
+				loadResultsEntry(line);
+				line = br.readLine();
+			}
+			list_2.setModel(channelData);
+			list_3.setModel(lunData);
+			list_4.setModel(threadReads);
+			list_5.setModel(threadWrites);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
+		
 	}
 	
 	private void writeFile() {
@@ -162,8 +366,6 @@ public class dem {
 		String tagging = "" + (chckbxLocality.isSelected() ? 1 : 0);
 		
 		String osScheduler = list.getSelectedIndex() + "";
-		
-		System.out.println("ssd_size: " + ssdSize);
 		
 		String fileName = "src/configuration.txt";
 		FileWriter outFile;
@@ -211,7 +413,8 @@ public class dem {
 			
 			Runtime runtime = Runtime.getRuntime();
 		    Process process;
-		    String command_name = eagleTreeExecutable + " " + srcLocation + " /gui_experiment";
+		    String command_name = eagleTreeExecutable + executableName + " " + srcLocation + " " + resultsLocation;
+		    System.out.println(command_name);
 		    process = runtime.exec(command_name);
 			InputStream is = process.getInputStream();
 			InputStreamReader isr = new InputStreamReader(is);
@@ -220,6 +423,7 @@ public class dem {
 			while ((line = br.readLine()) != null) {
 		    	System.out.println(line);
 		    }
+			loadResults();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}	
@@ -644,9 +848,9 @@ public class dem {
 		scrollPane_4.setBounds(6, 6, 148, 91);
 		panel_4.add(scrollPane_4);
 		
-		JList list_1 = new JList();
+		list_1 = new JList();
 		list_1.setModel(new AbstractListModel() {
-			String[] values = new String[] {"FIFO/NA\u00CFVE", "SMART/SMART", "FIFO/No Deadlines", "FIFO/Deadlines", "Block Device Interface", "Open Interface"};
+			String[] values = new String[] {"Split reads", "Don't split reads", "FIFO", "File System", "File System & Tagging"};
 			public int getSize() {
 				return values.length;
 			}
@@ -656,6 +860,7 @@ public class dem {
 		});
 		list_1.setSelectedIndex(6);
 		list_1.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		list_1.setSelectedIndex(0);
 		scrollPane_4.setViewportView(list_1);
 		
 		JScrollPane scrollPane_2 = new JScrollPane();
@@ -704,10 +909,18 @@ public class dem {
 		JLabel lblChannelUsage = new JLabel("Channel usage");
 		panel_3.add(lblChannelUsage, "2, 2, left, default");
 		
+		/*channelUtilField = new JTextField();
+		channelUtilField.setBackground(new Color(211, 211, 211));
+		channelUtilField.setText("130 \u03BCs");
+		channelUtilField.setHorizontalAlignment(SwingConstants.CENTER);
+		channelUtilField.setFont(new Font("Lucida Grande", Font.BOLD, 10));
+		channelUtilField.setColumns(5);
+		panel_3.add(channelUtilField, "4, 2, fill, default");*/
+		
 		JScrollPane scrollPane_5 = new JScrollPane();
 		panel_3.add(scrollPane_5, "4, 2, fill, fill");
 		
-		JList list_2 = new JList();
+		list_2 = new JList();
 		list_2.setBackground(new Color(211, 211, 211));
 		scrollPane_5.setViewportView(list_2);
 		list_2.setModel(new AbstractListModel() {
@@ -726,7 +939,7 @@ public class dem {
 		JScrollPane scrollPane_6 = new JScrollPane();
 		panel_3.add(scrollPane_6, "4, 4, fill, fill");
 		
-		JList list_3 = new JList();
+		list_3 = new JList();
 		list_3.setBackground(new Color(211, 211, 211));
 		scrollPane_6.setViewportView(list_3);
 		list_3.setModel(new AbstractListModel() {
@@ -895,7 +1108,10 @@ public class dem {
 		JButton btnRun = new JButton("RUN");
 		btnRun.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				writeFile();
+				if (list_1.getSelectedValue() != null) {
+					loadConfig();
+					writeFile();
+				}
 			}
 		});
 		btnRun.setFont(new Font("Lucida Grande", Font.BOLD, 13));
@@ -933,8 +1149,7 @@ public class dem {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				try {
-					graphW window = new graphW();
-					window.frmEagle.setVisible(true);
+					graphW window = new graphW("");
 				} catch (Exception e) {
 					e.printStackTrace();
 				}}
@@ -962,7 +1177,7 @@ public class dem {
 		JLabel lblReadIo = new JLabel("# Read IOs");
 		panel_7.add(lblReadIo, "2, 2, right, default");
 		
-		JList list_4 = new JList();
+		list_4 = new JList();
 		list_4.setModel(new AbstractListModel() {
 			String[] values = new String[] {"Thread 1: 30000", "Thread 2: 30000", "Thread 3: 30000", "Thread 4: 30000"};
 			public int getSize() {
@@ -978,7 +1193,7 @@ public class dem {
 		JLabel lblWriteIos = new JLabel("# Write IOs");
 		panel_7.add(lblWriteIos, "2, 4, right, default");
 		
-		JList list_5 = new JList();
+		list_5 = new JList();
 		list_5.setModel(new AbstractListModel() {
 			String[] values = new String[] {"Thread 1: 15000", "Thread 2: 15000", "Thread 3: 15000", "Thread 4: 15000"};
 			public int getSize() {
@@ -1015,6 +1230,15 @@ public class dem {
 		btnGcWl.setForeground(Color.BLUE);
 		btnGcWl.setFont(new Font("Lucida Grande", Font.BOLD, 12));
 		btnGcWl.setBounds(397, 452, 155, 29);
+		btnGcWl.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					graphW window = new graphW("exp_interleaving/no_split/Global/throughput_history.png");
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
 		frmEagleTree.getContentPane().add(btnGcWl);
 		
 		JButton btnLatencyDistributionWrt = new JButton("Latency dist. wrt priorities");
@@ -1053,17 +1277,9 @@ public class dem {
 		btnNewButton.setOpaque(true);
 		btnNewButton.setRequestFocusEnabled(false);
 		btnNewButton.setFont(new Font("Lucida Grande", Font.PLAIN, 5));
-		btnNewButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				try {
-					ImageWindow window = new ImageWindow();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-		btnNewButton.setIcon(new ImageIcon("src/demo.jpg"));
+
+		btnNewButton.setIcon(new ImageIcon("exp_interleaving/no_split/Global/throughput_history.eps"));
+		//btnNewButton.setIcon(new ImageIcon("src/demo.jpg"));
 		btnNewButton.setBounds(6, 265, 938, 187);
 		frmEagleTree.getContentPane().add(btnNewButton);
 		
@@ -1091,9 +1307,22 @@ public class dem {
 		});
 		list_6.setSelectedIndex(0);
 		
-		JButton btnAddNewWorkload = new JButton("Save settings");
+		JButton btnAddNewWorkload = new JButton("Load settings");
+		btnAddNewWorkload.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				loadConfig();
+			}
+		});
 		btnAddNewWorkload.setBounds(790, 135, 148, 29);
 		frmEagleTree.getContentPane().add(btnAddNewWorkload);
+		
+		JButton button = new JButton("load results");
+		button.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				loadResults();
+			}
+		});
+		button.setBounds(752, 236, 86, 23);
+		frmEagleTree.getContentPane().add(button);
 	}
-	
 }
