@@ -32,7 +32,6 @@ public class graphW {
 	 */
 	public graphW(String graphName) {
 		this.graphName = graphName;
-		
 		System.out.println(graphName);
 		initialize();
 		frmEagle.setVisible(true);
@@ -44,8 +43,8 @@ public class graphW {
 	private void initialize() {
 		frmEagle = new JFrame();
 		frmEagle.setTitle("EAGLE TREE - Graphs");
-		int length = (int)(450 * 1.5);
-		int height = (int)(300 * 1.5);
+		int length = (int)(700 * 1.5);
+		int height = (int)(350 * 1.5);
 		frmEagle.setBounds(100, 100, length, height);
 		frmEagle.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
