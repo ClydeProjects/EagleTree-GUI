@@ -1,0 +1,99 @@
+num writes:	200013
+avg writes latency:	4886.848405
+std writes latency:	1470.057104
+max writes latency:	12975.000000
+
+num reads:	0
+avg reads latency:	0.000000
+std reads latency:	0.000000
+max reads latency:	0.000000
+
+num gc reads:	69730
+num gc writes:	69672
+num erases:	2105
+
+Thoughput (IO/sec)
+total throughput:	13092
+read throughput:	0
+writes throughput:	13092
+channel util:	0.999994
+LUN util:	0.357218
+
+Channel util for package 0:	1.000000
+Channel util for package 1:	0.999990
+Channel util for package 2:	0.999993
+Channel util for package 3:	1.000000
+Channel util for package 4:	1.000000
+Channel util for package 5:	1.000000
+Channel util for package 6:	0.999973
+Channel util for package 7:	1.000000
+
+LUN util for LUN 0:	0.357410
+LUN util for LUN 1:	0.357413
+LUN util for LUN 2:	0.357437
+LUN util for LUN 3:	0.357354
+LUN util for LUN 4:	0.357322
+LUN util for LUN 5:	0.357550
+LUN util for LUN 6:	0.357674
+LUN util for LUN 7:	0.357471
+LUN util for LUN 8:	0.356633
+LUN util for LUN 9:	0.355702
+LUN util for LUN 10:	0.357038
+LUN util for LUN 11:	0.356181
+LUN util for LUN 12:	0.356151
+LUN util for LUN 13:	0.357090
+LUN util for LUN 14:	0.356259
+LUN util for LUN 15:	0.356434
+LUN util for LUN 16:	0.357876
+LUN util for LUN 17:	0.358131
+LUN util for LUN 18:	0.357795
+LUN util for LUN 19:	0.357712
+LUN util for LUN 20:	0.357815
+LUN util for LUN 21:	0.358117
+LUN util for LUN 22:	0.357479
+LUN util for LUN 23:	0.358030
+LUN util for LUN 24:	0.357167
+LUN util for LUN 25:	0.357148
+LUN util for LUN 26:	0.357043
+LUN util for LUN 27:	0.357242
+LUN util for LUN 28:	0.356721
+LUN util for LUN 29:	0.357036
+LUN util for LUN 30:	0.356617
+LUN util for LUN 31:	0.357574
+LUN util for LUN 32:	0.357884
+LUN util for LUN 33:	0.357591
+LUN util for LUN 34:	0.357935
+LUN util for LUN 35:	0.357807
+LUN util for LUN 36:	0.357531
+LUN util for LUN 37:	0.357953
+LUN util for LUN 38:	0.357841
+LUN util for LUN 39:	0.357861
+LUN util for LUN 40:	0.356697
+LUN util for LUN 41:	0.357538
+LUN util for LUN 42:	0.357448
+LUN util for LUN 43:	0.357562
+LUN util for LUN 44:	0.357315
+LUN util for LUN 45:	0.357258
+LUN util for LUN 46:	0.357707
+LUN util for LUN 47:	0.356860
+LUN util for LUN 48:	0.357187
+LUN util for LUN 49:	0.356513
+LUN util for LUN 50:	0.356975
+LUN util for LUN 51:	0.357715
+LUN util for LUN 52:	0.356827
+LUN util for LUN 53:	0.356626
+LUN util for LUN 54:	0.356740
+LUN util for LUN 55:	0.356797
+LUN util for LUN 56:	0.356567
+LUN util for LUN 57:	0.356641
+LUN util for LUN 58:	0.357165
+LUN util for LUN 59:	0.357264
+LUN util for LUN 60:	0.357029
+LUN util for LUN 61:	0.356796
+LUN util for LUN 62:	0.356738
+LUN util for LUN 63:	0.356947
+
+Thread reads 0: 0
+Thread writes 0: 99599
+Thread reads 1: 0
+Thread writes 1: 100402

@@ -110,6 +110,7 @@ public class dem {
 	final private static String eagleTreeExecutable = "../EagleTree/Experiments/";
 	final private static String srcLocation = "/home/niv/Desktop/GUI_eagle_tree/src/configuration.txt";
 	final private static String resultsLocation = "/home/niv/Desktop/GUI_eagle_tree/src/";
+	private String imageLocation = "exp_interleaving/no_split/Global/";
 	private String executableName = "interleaving";
 	
 	/**
@@ -135,50 +136,63 @@ public class dem {
 		initialize();
 	}
 	
+	public void setDefaultConfig() {
+		textField_5.setText("none");
+		textField_6.setText("none");
+		textField.setText("8");
+		textField_1.setText("8");
+		textField_2.setText("512");
+		textField_3.setText("128");
+		textField_11.setText("16");
+		textField_4.setText("115");
+		textField_8.setText("1600");		
+		textField_12.setText("350");
+		textField_9.setText("3000");
+		textField_13.setText("5");
+		textField_10.setText("64");
+		textField_7.setText("2");
+		textField_14.setText("0.7");
+		comboBox_2.setSelectedIndex(0);
+	}
+	
 	public void loadConfig() {
+		setDefaultConfig();
 		if (list_1.getSelectedValue() != null) {
 			String chosenConfig = list_1.getSelectedValue().toString();
-			System.out.println("hello " + chosenConfig);
 			
 			if (chosenConfig.compareTo("Split reads") == 0) {
-				comboBox_2.setSelectedIndex(0);  // fifo ssd scheduler
-				comboBox_1.setSelectedIndex(0);  // this is the interleaving thing
-				comboBox_3.setSelectedIndex(0);  // shortest queues
-				list.setSelectedIndex(0);  		 // FIFO OS scheduler
-				chckbxLocality.setSelected(false);
-				executableName = "interleaving";
-			}
-			else if (chosenConfig.compareTo("Don't split reads") == 0) {
-				comboBox_2.setSelectedIndex(0);  // fifo ssd scheduler
 				comboBox_1.setSelectedIndex(1);  // this is the interleaving thing
 				comboBox_3.setSelectedIndex(0);  // shortest queues
 				list.setSelectedIndex(0);  		 // FIFO OS scheduler
 				chckbxLocality.setSelected(false);
+
 				executableName = "interleaving";
+				imageLocation = "exp_interleaving/split/Global/";
 			}
-			else if (chosenConfig.compareTo("FIFO") == 0) {
-				comboBox_2.setSelectedIndex(0);  // fifo ssd scheduler
+			else if (chosenConfig.compareTo("Don't split reads") == 0) {
 				comboBox_1.setSelectedIndex(0);  // this is the interleaving thing
 				comboBox_3.setSelectedIndex(0);  // shortest queues
 				list.setSelectedIndex(0);  		 // FIFO OS scheduler
 				chckbxLocality.setSelected(false);
-				executableName = "deadlines";
+
+				executableName = "interleaving";
+				imageLocation = "exp_interleaving/no_split/Global/";
 			}
 			else if (chosenConfig.compareTo("File System") == 0) {
-				comboBox_2.setSelectedIndex(0);  // fifo ssd scheduler
-				comboBox_1.setSelectedIndex(0);  // this is the interleaving thing
+				comboBox_1.setSelectedIndex(1);  // this is the interleaving thing
 				comboBox_3.setSelectedIndex(0);  // shortest queues
 				list.setSelectedIndex(1);  		 // FIFO OS scheduler
 				chckbxLocality.setSelected(false);
 				executableName = "sequential";
+				imageLocation = "exp_sequential/no_locality/Global/";
 			}
 			else if (chosenConfig.compareTo("File System & Tagging") == 0) {
-				comboBox_2.setSelectedIndex(0);  // fifo ssd scheduler
-				comboBox_1.setSelectedIndex(0);  // this is the interleaving thing
+				comboBox_1.setSelectedIndex(1);  // this is the interleaving thing
 				comboBox_3.setSelectedIndex(2);  // shortest queues
 				list.setSelectedIndex(1);  		 // FIFO OS scheduler
 				chckbxLocality.setSelected(true);
 				executableName = "sequential";
+				imageLocation = "exp_sequential/locality/Global/";
 			}
 		}
 	}
@@ -273,12 +287,12 @@ public class dem {
 			lunData.addElement(str);
 		}
 		else if (line.startsWith("Thread reads")) {
-			int reads = readInt(line);
+			int reads = readInt(line.split(":")[1]);
 			int id = threadReads.size() + 1;
 			threadReads.addElement("#" + id + ": " + reads);
 		}
 		else if (line.startsWith("Thread writes")) {
-			int writes = readInt(line);
+			int writes = readInt(line.split(":")[1]);
 			int id = threadWrites.size() + 1;
 			threadWrites.addElement("#" + id + ": " + writes);
 		}
@@ -351,7 +365,13 @@ public class dem {
 		String scheduling = comboBox_2.getSelectedIndex() + "";
 		
 		String readDeadline = textField_5.getText();
+		if (readDeadline.compareTo("none") == 0) {
+			readDeadline = "10000000";
+		}
 		String writeDeadline = textField_6.getText();
+		if (writeDeadline.compareTo("none") == 0) {
+			writeDeadline = "10000000";
+		}
 		String interleaving = comboBox_1.getSelectedIndex() + "";
 		
 		String queueSize = textField_10.getText();
@@ -412,10 +432,9 @@ public class dem {
 			outFile.close();
 			
 			Runtime runtime = Runtime.getRuntime();
-		    Process process;
 		    String command_name = eagleTreeExecutable + executableName + " " + srcLocation + " " + resultsLocation;
 		    System.out.println(command_name);
-		    process = runtime.exec(command_name);
+		    Process process = runtime.exec(command_name);
 			InputStream is = process.getInputStream();
 			InputStreamReader isr = new InputStreamReader(is);
 			BufferedReader br = new BufferedReader(isr);
@@ -673,6 +692,7 @@ public class dem {
 		comboBox.setModel(new DefaultComboBoxModel(new String[] {"Pure Page Mapping", "DFTL"}));
 		comboBox.setSelectedIndex(0);
 		comboBox.setToolTipText("Pure page mapping");
+		comboBox.setEnabled(false);
 		panel_1.add(comboBox, "4, 2, fill, default");
 		
 		JLabel lblScheduling = new JLabel("Scheduling");
@@ -690,7 +710,7 @@ public class dem {
 		panel_1.add(lblReadDeadline, "2, 6");
 		
 		textField_5 = new JTextField();
-		textField_5.setText("20");
+		textField_5.setText("none");
 		textField_5.setHorizontalAlignment(SwingConstants.CENTER);
 		textField_5.setFont(new Font("Lucida Grande", Font.BOLD, 10));
 		textField_5.setColumns(5);
@@ -701,7 +721,7 @@ public class dem {
 		panel_1.add(lblWriteDeadline, "2, 8");
 		
 		textField_6 = new JTextField();
-		textField_6.setText("400");
+		textField_6.setText("none");
 		textField_6.setHorizontalAlignment(SwingConstants.CENTER);
 		textField_6.setFont(new Font("Lucida Grande", Font.BOLD, 10));
 		textField_6.setColumns(5);
@@ -712,7 +732,7 @@ public class dem {
 		panel_1.add(lblInterleaving, "2, 10, left, default");
 		
 		comboBox_1 = new JComboBox();
-		comboBox_1.setModel(new DefaultComboBoxModel(new String[] {"Smart (defer transfers)", "Na\u00EFve"}));
+		comboBox_1.setModel(new DefaultComboBoxModel(new String[] {"Na\u00EFve", "Smart (defer transfers)"}));
 		comboBox_1.setSelectedIndex(0);
 		comboBox_1.setToolTipText("Pure page mapping");
 		panel_1.add(comboBox_1, "4, 10, fill, default");
@@ -773,7 +793,7 @@ public class dem {
 		panel_1.add(lblOverprovisioning, "2, 24, left, default");
 		
 		textField_14 = new JTextField();
-		textField_14.setText("0.6");
+		textField_14.setText("0.7");
 		textField_14.setHorizontalAlignment(SwingConstants.CENTER);
 		textField_14.setFont(new Font("Lucida Grande", Font.BOLD, 10));
 		textField_14.setColumns(5);
@@ -788,6 +808,7 @@ public class dem {
 		comboBox_4.setSelectedIndex(0);
 		comboBox_4.setToolTipText("Disabled");
 		panel_1.add(comboBox_4, "4, 26, fill, default");
+		comboBox_4.setEnabled(false);
 		
 		JLabel lblMaxCopybacks = new JLabel("Max Copybacks");
 		lblMaxCopybacks.setFont(new Font("Lucida Grande", Font.BOLD, 13));
@@ -798,6 +819,7 @@ public class dem {
 		textField_15.setHorizontalAlignment(SwingConstants.CENTER);
 		textField_15.setFont(new Font("Lucida Grande", Font.BOLD, 10));
 		textField_15.setColumns(5);
+		textField_15.setEnabled(false);
 		panel_1.add(textField_15, "4, 28, fill, default");
 		
 		JLabel label_1 = new JLabel("- GC greedyness");
@@ -850,7 +872,7 @@ public class dem {
 		
 		list_1 = new JList();
 		list_1.setModel(new AbstractListModel() {
-			String[] values = new String[] {"Split reads", "Don't split reads", "FIFO", "File System", "File System & Tagging"};
+			String[] values = new String[] {"Don't split reads", "Split reads", "File System", "File System & Tagging"};
 			public int getSize() {
 				return values.length;
 			}
@@ -858,9 +880,13 @@ public class dem {
 				return values[index];
 			}
 		});
-		list_1.setSelectedIndex(6);
 		list_1.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		list_1.setSelectedIndex(0);
+		list_1.addMouseListener(new MouseAdapter() {
+		    public void mouseClicked(MouseEvent evt) {
+		        loadConfig();
+		    }
+		});
 		scrollPane_4.setViewportView(list_1);
 		
 		JScrollPane scrollPane_2 = new JScrollPane();
@@ -924,7 +950,7 @@ public class dem {
 		list_2.setBackground(new Color(211, 211, 211));
 		scrollPane_5.setViewportView(list_2);
 		list_2.setModel(new AbstractListModel() {
-			String[] values = new String[] {"#1: 87%", "#2: 91%", "#3: 81%", "#4: 95%"};
+			String[] values = new String[] {"#1:", "#2:", "#3:", "#4:", "#5:", "#6:", "#7:", "#8:"};
 			public int getSize() {
 				return values.length;
 			}
@@ -943,7 +969,7 @@ public class dem {
 		list_3.setBackground(new Color(211, 211, 211));
 		scrollPane_6.setViewportView(list_3);
 		list_3.setModel(new AbstractListModel() {
-			String[] values = new String[] {"#1: L1 85%", "#1: L2 82%", "#1: L3 91%", "", "", "", "", "a"};
+			String[] values = new String[] {""};
 			public int getSize() {
 				return values.length;
 			}
@@ -951,6 +977,7 @@ public class dem {
 				return values[index];
 			}
 		});
+		
 		
 		JLabel lblRamUsage = new JLabel("RAM usage");
 		panel_3.add(lblRamUsage, "2, 6, left, default");
@@ -1020,7 +1047,7 @@ public class dem {
 		
 		txts = new JTextField();
 		txts.setBackground(new Color(211, 211, 211));
-		txts.setText("130 \u03BCs");
+		txts.setText("");
 		txts.setHorizontalAlignment(SwingConstants.CENTER);
 		txts.setFont(new Font("Lucida Grande", Font.BOLD, 10));
 		txts.setColumns(5);
@@ -1028,7 +1055,7 @@ public class dem {
 		
 		txts_1 = new JTextField();
 		txts_1.setBackground(new Color(211, 211, 211));
-		txts_1.setText("380 \u03BCs");
+		txts_1.setText("");  // \u03BCs
 		txts_1.setHorizontalAlignment(SwingConstants.CENTER);
 		txts_1.setFont(new Font("Lucida Grande", Font.BOLD, 10));
 		txts_1.setColumns(5);
@@ -1036,7 +1063,7 @@ public class dem {
 		
 		txts_2 = new JTextField();
 		txts_2.setBackground(new Color(211, 211, 211));
-		txts_2.setText("163 \u03BCs");
+		txts_2.setText("");
 		txts_2.setHorizontalAlignment(SwingConstants.CENTER);
 		txts_2.setFont(new Font("Lucida Grande", Font.BOLD, 10));
 		txts_2.setColumns(5);
@@ -1047,7 +1074,7 @@ public class dem {
 		
 		txts_3 = new JTextField();
 		txts_3.setBackground(new Color(211, 211, 211));
-		txts_3.setText("400 \u03BCs");
+		txts_3.setText("");
 		txts_3.setHorizontalAlignment(SwingConstants.CENTER);
 		txts_3.setFont(new Font("Lucida Grande", Font.BOLD, 10));
 		txts_3.setColumns(5);
@@ -1055,7 +1082,7 @@ public class dem {
 		
 		txts_4 = new JTextField();
 		txts_4.setBackground(new Color(211, 211, 211));
-		txts_4.setText("3927 \u03BCs");
+		txts_4.setText("");
 		txts_4.setHorizontalAlignment(SwingConstants.CENTER);
 		txts_4.setFont(new Font("Lucida Grande", Font.BOLD, 10));
 		txts_4.setColumns(5);
@@ -1063,7 +1090,7 @@ public class dem {
 		
 		txts_5 = new JTextField();
 		txts_5.setBackground(new Color(211, 211, 211));
-		txts_5.setText("1240 \u03BCs");
+		txts_5.setText("");
 		txts_5.setHorizontalAlignment(SwingConstants.CENTER);
 		txts_5.setFont(new Font("Lucida Grande", Font.BOLD, 10));
 		txts_5.setColumns(5);
@@ -1073,7 +1100,7 @@ public class dem {
 		panel_5.add(lblThroughput, "2, 8, left, default");
 		
 		txtReadMbs = new JTextField();
-		txtReadMbs.setText("All:120- Reads:130- Writes:110");
+		txtReadMbs.setText("All:   - Reads:   - Writes:   ");
 		txtReadMbs.setHorizontalAlignment(SwingConstants.CENTER);
 		txtReadMbs.setFont(new Font("Lucida Grande", Font.BOLD, 10));
 		txtReadMbs.setColumns(5);
@@ -1084,7 +1111,7 @@ public class dem {
 		panel_5.add(lblGcIos, "2, 10, left, center");
 		
 		txtRead = new JTextField();
-		txtRead.setText("Read:410 - Write:409 - Erase:23");
+		txtRead.setText("Read:    - Write:    - Erase:  ");
 		txtRead.setHorizontalAlignment(SwingConstants.CENTER);
 		txtRead.setFont(new Font("Lucida Grande", Font.BOLD, 10));
 		txtRead.setColumns(5);
@@ -1095,15 +1122,15 @@ public class dem {
 		panel_5.add(lblWlIos, "2, 12, left, default");
 		
 		txtRead_1 = new JTextField();
-		txtRead_1.setText("Read:54 - Write:54 - Erase:1");
+		txtRead_1.setText("Read:   - Write:   - Erase: ");
 		txtRead_1.setHorizontalAlignment(SwingConstants.CENTER);
 		txtRead_1.setFont(new Font("Lucida Grande", Font.BOLD, 10));
 		txtRead_1.setColumns(5);
 		txtRead_1.setBackground(new Color(211, 211, 211));
 		panel_5.add(txtRead_1, "4, 12, 5, 1, fill, default");
 		
-		JLabel label_2 = new JLabel("GC IOs");
-		panel_5.add(label_2, "2, 24");
+		//JLabel label_2 = new JLabel("GC IOs");
+		//panel_5.add(label_2, "2, 24");
 		
 		JButton btnRun = new JButton("RUN");
 		btnRun.addActionListener(new ActionListener() {
@@ -1140,7 +1167,7 @@ public class dem {
 		lblInputQueues.setFont(new Font("Lucida Grande", Font.BOLD, 13));
 		panel_6.add(lblInputQueues, "2, 2");
 		
-		JScrollPane scrollPane_8 = new JScrollPane();
+		/*JScrollPane scrollPane_8 = new JScrollPane();
 		scrollPane_8.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		panel_6.add(scrollPane_8, "2, 4, fill, fill");
 		
@@ -1149,14 +1176,49 @@ public class dem {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				try {
-					graphW window = new graphW("");
+					graphW window = new graphW("src/deadlines_writes_latency_mean.png");
 				} catch (Exception e) {
 					e.printStackTrace();
 				}}
 		});
 		txtrMixSeqVarying.setBackground(new Color(211, 211, 211));
 		scrollPane_8.setViewportView(txtrMixSeqVarying);
-		txtrMixSeqVarying.setText("Mix Seq, vary R Dead.\nMix Seq, vary W Dead.\n");
+		txtrMixSeqVarying.setText("Mix Seq, vary R Dead.\nMix Seq, vary W Dead.\n");*/
+	
+		JScrollPane scrollPane_8 = new JScrollPane();
+		scrollPane_8.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		panel_6.add(scrollPane_8, "2, 4, fill, fill");
+		
+		JList list_graphics = new JList();
+		list_graphics.setModel(new AbstractListModel() {
+			String[] values = new String[] {"reads", "writes"};
+			public int getSize() {
+				return values.length;
+			}
+			public Object getElementAt(int index) {
+				return values[index];
+			}
+		});
+		list_graphics.addMouseListener(new MouseAdapter() {
+		    public void mouseClicked(MouseEvent evt) {
+		        JList list = (JList)evt.getSource();
+		        if (evt.getClickCount() == 2) {
+		            int index = list.locationToIndex(evt.getPoint());
+		            String graphTitle; // = list.getModel().getElementAt(index).toString();
+		            if (index == 0) {
+		            	graphTitle = "src/deadlines_read_latency_mean.png";
+		            } else {
+		            	graphTitle = "src/deadlines_writes_latency_mean.png";
+		            }
+		            graphW graph = new graphW(graphTitle);
+		        } 
+		    }
+		});
+		list_graphics.setSelectedIndex(6);
+		list_graphics.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		list_graphics.setSelectedIndex(0);
+		scrollPane_8.setViewportView(list_graphics);
+	
 		
 		JPanel panel_7 = new JPanel();
 		panel_7.setBorder(new LineBorder(Color.GRAY));
@@ -1179,7 +1241,7 @@ public class dem {
 		
 		list_4 = new JList();
 		list_4.setModel(new AbstractListModel() {
-			String[] values = new String[] {"Thread 1: 30000", "Thread 2: 30000", "Thread 3: 30000", "Thread 4: 30000"};
+			String[] values = new String[] {};
 			public int getSize() {
 				return values.length;
 			}
@@ -1195,7 +1257,7 @@ public class dem {
 		
 		list_5 = new JList();
 		list_5.setModel(new AbstractListModel() {
-			String[] values = new String[] {"Thread 1: 15000", "Thread 2: 15000", "Thread 3: 15000", "Thread 4: 15000"};
+			String[] values = new String[] {};
 			public int getSize() {
 				return values.length;
 			}
@@ -1211,6 +1273,15 @@ public class dem {
 		btnDetailledTraces.setFont(new Font("Lucida Grande", Font.BOLD, 12));
 		btnDetailledTraces.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				Runtime runtime = Runtime.getRuntime();
+			    String command_name = "gedit " + imageLocation + "trace.txt";
+			    System.out.println(command_name);
+			    try {
+					runtime.exec(command_name);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		});
 		btnDetailledTraces.setBounds(0, 452, 220, 29);
@@ -1221,6 +1292,11 @@ public class dem {
 		btnLatencyDistribution.setFont(new Font("Lucida Grande", Font.BOLD, 12));
 		btnLatencyDistribution.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				try {
+					new graphW(imageLocation + "waittime-histograms-allIOs.png");
+				} catch (Exception exp) {
+					exp.printStackTrace();
+				}
 			}
 		});
 		btnLatencyDistribution.setBounds(232, 452, 155, 29);
@@ -1233,7 +1309,7 @@ public class dem {
 		btnGcWl.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				try {
-					graphW window = new graphW("exp_interleaving/no_split/Global/throughput_history.png");
+					new graphW(imageLocation + "throughput_history.png");
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -1278,8 +1354,9 @@ public class dem {
 		btnNewButton.setRequestFocusEnabled(false);
 		btnNewButton.setFont(new Font("Lucida Grande", Font.PLAIN, 5));
 
-		btnNewButton.setIcon(new ImageIcon("exp_interleaving/no_split/Global/throughput_history.eps"));
-		//btnNewButton.setIcon(new ImageIcon("src/demo.jpg"));
+		//btnNewButton.setIcon(new ImageIcon("exp_interleaving/no_split/Global/throughput_history.eps"));
+		btnNewButton.setIcon(new ImageIcon("src/demo.jpg"));
+		btnNewButton.setRequestFocusEnabled(false);
 		btnNewButton.setBounds(6, 265, 938, 187);
 		frmEagleTree.getContentPane().add(btnNewButton);
 		
@@ -1294,6 +1371,7 @@ public class dem {
 		frmEagleTree.getContentPane().add(scrollPane_9);
 		
 		JList list_6 = new JList();
+		list_6.setEnabled(false);
 		scrollPane_9.setViewportView(list_6);
 		list_6.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		list_6.setModel(new AbstractListModel() {
@@ -1307,7 +1385,7 @@ public class dem {
 		});
 		list_6.setSelectedIndex(0);
 		
-		JButton btnAddNewWorkload = new JButton("Load settings");
+		/*JButton btnAddNewWorkload = new JButton("Load settings");
 		btnAddNewWorkload.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				loadConfig();
@@ -1315,7 +1393,7 @@ public class dem {
 		});
 		btnAddNewWorkload.setBounds(790, 135, 148, 29);
 		frmEagleTree.getContentPane().add(btnAddNewWorkload);
-		
+		*/
 		JButton button = new JButton("load results");
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
