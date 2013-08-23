@@ -110,8 +110,8 @@ public class dem {
 	private DefaultListModel threadWrites;
 	//private JTextField channelUtilField;
 	final private static String eagleTreeExecutable = "../EagleTree/Experiments/";
-	final private static String srcLocation = "/home/niv/Desktop/GUI_eagle_tree/src/configuration.txt";
-	final private static String resultsLocation = "/home/niv/Desktop/GUI_eagle_tree/src/";
+	private static String srcLocation = "/src/configuration.txt";
+	private static String resultsLocation = "/src/";
 	private String imageLocation = "exp_interleaving/no_split/Global/";
 	private String executableName = "interleaving";
 	
@@ -133,8 +133,13 @@ public class dem {
 
 	/**
 	 * Create the application.
+	 * @throws IOException 
 	 */
-	public dem() {
+	public dem() throws IOException {
+		String current = new java.io.File( "." ).getCanonicalPath();
+        System.out.println("Current dir:"+current);
+        srcLocation = current + srcLocation;
+        resultsLocation = current + resultsLocation;
 		initialize();
 	}
 	
