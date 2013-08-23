@@ -1,65 +1,35 @@
-import java.awt.Component;
 import java.awt.EventQueue;
-import java.awt.Graphics;
-
 import javax.swing.JFrame;
 import javax.swing.JButton;
 import javax.swing.JPanel;
-
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-
 import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
 import javax.swing.JTextField;
-import javax.swing.JRadioButton;
-import javax.swing.JSplitPane;
-
-import java.awt.BorderLayout;
-
 import javax.swing.DefaultListModel;
 import javax.swing.JCheckBox;
-import javax.swing.JInternalFrame;
-import javax.swing.UIManager;
-import javax.swing.JSpinner;
-import javax.swing.JTextArea;
 import javax.swing.JList;
 import javax.swing.AbstractListModel;
-import javax.swing.JToolBar;
-import javax.swing.JScrollBar;
-
-import java.awt.GridLayout;
-
-import javax.swing.JTextPane;
 import javax.swing.JLabel;
-
 import java.awt.Font;
-
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.RowSpec;
 import com.jgoodies.forms.factories.FormFactory;
-
 import javax.swing.SwingConstants;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JToggleButton;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.LineBorder;
-
 import java.awt.Color;
-
 import javax.swing.ImageIcon;
-
 import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.*;
-import java.util.*;
-import java.awt.Button;
+import java.text.DecimalFormat;
 
 public class dem {
-
 	private JFrame frmEagleTree;
 	private JTextField textField;
 	private JTextField textField_1;
@@ -88,32 +58,34 @@ public class dem {
 	private JTextField txtInfinite;
 	private JTextField textField_14;
 	private JTextField textField_15;
-	private JComboBox comboBox;
-	private JComboBox comboBox_1;
-	private JComboBox comboBox_2;
-	private JComboBox comboBox_3;
-	private JComboBox comboBox_4;
+	private JComboBox<String> comboBox;
+	private JComboBox<String> comboBox_1;
+	private JComboBox<String> comboBox_2;
+	private JComboBox<String> comboBox_3;
+	private JComboBox<String> comboBox_4;
 	private JCheckBox chckbxIoPriorities;
 	private JCheckBox chckbxTemperatures; 
 	private JCheckBox chckbxLocality ;
-	private JList list;
-	private JList list_1;
-	private JList list_2;
-	private JList list_3;
-	private JList list_4;
-	private JList list_5;
-	private DefaultListModel channelData;
-	private DefaultListModel lunData;
-	private DefaultListModel threadReads;
+	private JList<String> list;
+	private JList<String> list_1;
+	private JList<String> list_2;
+	private JList<String> list_3;
+	private JList<String> list_4;
+	private JList<String> list_5;
+	private DefaultListModel<String> channelData;
+	private DefaultListModel<String> lunData;
+	private DefaultListModel<String> threadReads;
 	private JLabel hourglass;
 	private JLabel hourglassLabel;
-	private DefaultListModel threadWrites;
+	JList<String> list_graphics;
+	private DefaultListModel<String> threadWrites;
 	//private JTextField channelUtilField;
 	final private static String eagleTreeExecutable = "../EagleTree/Experiments/";
 	private static String srcLocation = "/src/configuration.txt";
 	private static String resultsLocation = "/src/";
 	private String imageLocation = "exp_interleaving/no_split/Global/";
 	private String executableName = "interleaving";
+	DecimalFormat doubleFormat = new DecimalFormat("##.#");
 	
 	/**
 	 * Launch the application.
@@ -235,10 +207,10 @@ public class dem {
 		list_5.removeAll();
 		txtRead.setText("");
 		txtReadMbs.setText("");
-		channelData = new DefaultListModel();
-		lunData = new DefaultListModel();
-		threadReads = new DefaultListModel();
-		threadWrites = new DefaultListModel();
+		channelData = new DefaultListModel<String>();
+		lunData = new DefaultListModel<String>();
+		threadReads = new DefaultListModel<String>();
+		threadWrites = new DefaultListModel<String>();
 	}
 	
 	private void loadResultsEntry(String line) {
@@ -310,13 +282,13 @@ public class dem {
 		else if (line.startsWith("Channel util for package ")) {
 			double val = readDouble(line);
 			int id = channelData.size() + 1;
-			String str = "#" + id + ": " + val;
+			String str = "#" + id + ":    " + doubleFormat.format(val * 100) + "%";
 			channelData.addElement(str);
 		}
 		else if (line.startsWith("LUN util for LUN")) {
 			double val = readDouble(line);
 			int id = lunData.size() + 1;
-			String str = "#" + id + ": " + val;
+			String str = "#" + id + ":    " + doubleFormat.format(val * 100) + "%";
 			lunData.addElement(str);
 		}
 		else if (line.startsWith("Thread reads")) {
@@ -359,14 +331,15 @@ public class dem {
 			list_5.removeAll();
 			txtRead.setText("");
 			txtReadMbs.setText("");
-			channelData = new DefaultListModel();
-			lunData = new DefaultListModel();
-			threadReads = new DefaultListModel();
-			threadWrites = new DefaultListModel();
+			channelData = new DefaultListModel<String>();
+			lunData = new DefaultListModel<String>();
+			threadReads = new DefaultListModel<String>();
+			threadWrites = new DefaultListModel<String>();
 			while (line != null) {
 				loadResultsEntry(line);
 				line = br.readLine();
 			}
+			br.close();
 			list_2.setModel(channelData);
 			list_3.setModel(lunData);
 			list_4.setModel(threadReads);
@@ -484,6 +457,7 @@ public class dem {
 	/**
 	 * Initialize the contents of the frame.
 	 */
+	@SuppressWarnings("serial")
 	private void initialize() {
 		frmEagleTree = new JFrame();
 		frmEagleTree.setBounds(new Rectangle(0, 0, 1360, 700));
@@ -700,19 +674,18 @@ public class dem {
 		lblMapping.setFont(new Font("Lucida Grande", Font.BOLD, 13));
 		panel_1.add(lblMapping, "2, 2, left, default");
 		
-		comboBox = new JComboBox();
-		comboBox.setModel(new DefaultComboBoxModel(new String[] {"Pure Page Mapping", "DFTL"}));
+		comboBox = new JComboBox<String>();
+		comboBox.setModel(new DefaultComboBoxModel<String>(new String[] {"Pure Page Mapping"}));
 		comboBox.setSelectedIndex(0);
 		comboBox.setToolTipText("Pure page mapping");
-		comboBox.setEnabled(false);
 		panel_1.add(comboBox, "4, 2, fill, default");
 		
 		JLabel lblScheduling = new JLabel("Scheduling");
 		lblScheduling.setFont(new Font("Lucida Grande", Font.BOLD, 13));
 		panel_1.add(lblScheduling, "2, 4, left, default");
 		
-		comboBox_2 = new JComboBox();
-		comboBox_2.setModel(new DefaultComboBoxModel(new String[] {"FIFO", "Smart", "AR/AW/IR/IW/E", "IR/IW/E/AR/AW", "AR/IR/AW/IW/E", "AW/IW/AR/IR/E", "AR/IR/IE/AW/IW"}));
+		comboBox_2 = new JComboBox<String>();
+		comboBox_2.setModel(new DefaultComboBoxModel<String>(new String[] {"FIFO", "Smart", "AR/AW/IR/IW/E", "IR/IW/E/AR/AW", "AR/IR/AW/IW/E", "AW/IW/AR/IR/E", "AR/IR/IE/AW/IW"}));
 		comboBox_2.setSelectedIndex(0);
 		comboBox_2.setToolTipText("FIFO");
 		panel_1.add(comboBox_2, "4, 4, fill, default");
@@ -743,8 +716,8 @@ public class dem {
 		lblInterleaving.setFont(new Font("Lucida Grande", Font.PLAIN, 13));
 		panel_1.add(lblInterleaving, "2, 10, left, default");
 		
-		comboBox_1 = new JComboBox();
-		comboBox_1.setModel(new DefaultComboBoxModel(new String[] {"Na\u00EFve", "Smart (defer transfers)"}));
+		comboBox_1 = new JComboBox<String>();
+		comboBox_1.setModel(new DefaultComboBoxModel<String>(new String[] {"Na\u00EFve", "Smart (defer transfers)"}));
 		comboBox_1.setSelectedIndex(0);
 		comboBox_1.setToolTipText("Pure page mapping");
 		panel_1.add(comboBox_1, "4, 10, fill, default");
@@ -768,8 +741,8 @@ public class dem {
 		lblAllocationStrategy.setFont(new Font("Lucida Grande", Font.PLAIN, 13));
 		panel_1.add(lblAllocationStrategy, "2, 16, right, default");
 		
-		comboBox_3 = new JComboBox();
-		comboBox_3.setModel(new DefaultComboBoxModel(new String[] {"Shortest queue (SQ)", "SQ + DWL", "SQ + Locality", "Round Robin"}));
+		comboBox_3 = new JComboBox<String>();
+		comboBox_3.setModel(new DefaultComboBoxModel<String>(new String[] {"Shortest queue (SQ)", "SQ + DWL", "SQ + Locality", "Round Robin"}));
 		comboBox_3.setSelectedIndex(0);
 		comboBox_3.setToolTipText("Shortest queue (SQ)");
 		panel_1.add(comboBox_3, "4, 16, fill, default");
@@ -815,8 +788,8 @@ public class dem {
 		lblStaticWearLeveling.setFont(new Font("Lucida Grande", Font.BOLD, 13));
 		panel_1.add(lblStaticWearLeveling, "2, 26, right, default");
 		
-		comboBox_4 = new JComboBox();
-		comboBox_4.setModel(new DefaultComboBoxModel(new String[] {"Disabled", "Enabled"}));
+		comboBox_4 = new JComboBox<String>();
+		comboBox_4.setModel(new DefaultComboBoxModel<String>(new String[] {"Disabled", "Enabled"}));
 		comboBox_4.setSelectedIndex(0);
 		comboBox_4.setToolTipText("Disabled");
 		panel_1.add(comboBox_4, "4, 26, fill, default");
@@ -878,13 +851,13 @@ public class dem {
 		scrollPane_4.setBounds(6, 6, 148, 91);
 		panel_4.add(scrollPane_4);
 		
-		list_1 = new JList();
-		list_1.setModel(new AbstractListModel() {
+		list_1 = new JList<String>();
+		list_1.setModel(new AbstractListModel<String>() {
 			String[] values = new String[] {"Don't split reads", "Split reads", "File System", "File System & Tagging"};
 			public int getSize() {
 				return values.length;
 			}
-			public Object getElementAt(int index) {
+			public String getElementAt(int index) {
 				return values[index];
 			}
 		});
@@ -901,15 +874,15 @@ public class dem {
 		scrollPane_2.setBounds(564, 215, 204, 99);
 		frmEagleTree.getContentPane().add(scrollPane_2);
 		
-		list = new JList();
+		list = new JList<String>();
 		scrollPane_2.setColumnHeaderView(list);
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		list.setModel(new AbstractListModel() {
+		list.setModel(new AbstractListModel<String>() {
 			String[] values = new String[] {"NOOP (FIFO)", "CFQ (Completely Fair Queuing)"};
 			public int getSize() {
 				return values.length;
 			}
-			public Object getElementAt(int index) {
+			public String getElementAt(int index) {
 				return values[index];
 			}
 		});
@@ -963,15 +936,15 @@ public class dem {
 		JScrollPane scrollPane_11 = new JScrollPane();
 		panel_3.add(scrollPane_11, "2, 4, fill, fill");
 		
-		list_2 = new JList();
+		list_2 = new JList<String>();
 		scrollPane_11.setViewportView(list_2);
 		list_2.setBackground(new Color(211, 211, 211));
-		list_2.setModel(new AbstractListModel() {
+		list_2.setModel(new AbstractListModel<String>() {
 			String[] values = new String[] {"#1:", "#2:", "#3:", "#4:", "#5:", "#6:", "#7:", "#8:"};
 			public int getSize() {
 				return values.length;
 			}
-			public Object getElementAt(int index) {
+			public String getElementAt(int index) {
 				return values[index];
 			}
 		});
@@ -979,15 +952,15 @@ public class dem {
 		JScrollPane scrollPane_5 = new JScrollPane();
 		panel_3.add(scrollPane_5, "4, 4, 1, 13, fill, fill");
 		
-		list_3 = new JList();
+		list_3 = new JList<String>();
 		scrollPane_5.setViewportView(list_3);
 		list_3.setBackground(new Color(211, 211, 211));
-		list_3.setModel(new AbstractListModel() {
+		list_3.setModel(new AbstractListModel<String>() {
 			String[] values = new String[] {""};
 			public int getSize() {
 				return values.length;
 			}
-			public Object getElementAt(int index) {
+			public String getElementAt(int index) {
 				return values[index];
 			}
 		});
@@ -1000,7 +973,7 @@ public class dem {
 		txtB = new JTextField();
 		panel_3.add(txtB, "2, 8");
 		txtB.setBackground(new Color(211, 211, 211));
-		txtB.setText("19560 B");
+		txtB.setText("");
 		txtB.setHorizontalAlignment(SwingConstants.CENTER);
 		txtB.setFont(new Font("Lucida Grande", Font.BOLD, 10));
 		txtB.setColumns(5);
@@ -1012,14 +985,14 @@ public class dem {
 		JScrollPane scrollPane_6 = new JScrollPane();
 		panel_3.add(scrollPane_6, "2, 12, fill, fill");
 		
-		list_4 = new JList();
+		list_4 = new JList<String>();
 		scrollPane_6.setViewportView(list_4);
-		list_4.setModel(new AbstractListModel() {
+		list_4.setModel(new AbstractListModel<String>() {
 			String[] values = new String[] {"    "};
 			public int getSize() {
 				return values.length;
 			}
-			public Object getElementAt(int index) {
+			public String getElementAt(int index) {
 				return values[index];
 			}
 		});
@@ -1032,14 +1005,14 @@ public class dem {
 		JScrollPane scrollPane_10 = new JScrollPane();
 		panel_3.add(scrollPane_10, "2, 16, fill, fill");
 		
-		list_5 = new JList();
+		list_5 = new JList<String>();
 		scrollPane_10.setViewportView(list_5);
-		list_5.setModel(new AbstractListModel() {
+		list_5.setModel(new AbstractListModel<String>() {
 			String[] values = new String[] {"    "};
 			public int getSize() {
 				return values.length;
 			}
-			public Object getElementAt(int index) {
+			public String getElementAt(int index) {
 				return values[index];
 			}
 		});
@@ -1078,13 +1051,13 @@ public class dem {
 				FormFactory.RELATED_GAP_ROWSPEC,
 				FormFactory.DEFAULT_ROWSPEC,}));
 		
-		JLabel lblMean = new JLabel("Mean");
+		JLabel lblMean = new JLabel("Mean (\u03BCs)");
 		panel_5.add(lblMean, "4, 2, center, default");
 		
-		JLabel lblMax = new JLabel("Std");
+		JLabel lblMax = new JLabel("Std (\u03BCs)");
 		panel_5.add(lblMax, "6, 2, center, default");
 		
-		JLabel lblStd = new JLabel("Max");
+		JLabel lblStd = new JLabel("Max (\u03BCs)");
 		panel_5.add(lblStd, "8, 2, center, default");
 		
 		JLabel lblReadLatency = new JLabel("Read latency");
@@ -1261,13 +1234,13 @@ public class dem {
 		});
 		frmEagleTree.getContentPane().add(btnGcWl);
 		
-		JButton btnLatencyDistributionWrt = new JButton("Latency dist. wrt priorities");
+		/*JButton btnLatencyDistributionWrt = new JButton("Latency dist. wrt priorities");
 		btnLatencyDistributionWrt.setFont(new Font("Lucida Grande", Font.BOLD, 12));
 		btnLatencyDistributionWrt.setEnabled(false);
 		btnLatencyDistributionWrt.setBounds(232, 636, 220, 29);
-		frmEagleTree.getContentPane().add(btnLatencyDistributionWrt);
+		frmEagleTree.getContentPane().add(btnLatencyDistributionWrt);*/
 		
-		JButton btnAddNewGraphics = new JButton("Add new graphics");
+		/*JButton btnAddNewGraphics = new JButton("Add new graphics");
 		btnAddNewGraphics.setEnabled(false);
 		btnAddNewGraphics.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -1275,7 +1248,7 @@ public class dem {
 		});
 		btnAddNewGraphics.setBounds(464, 600, 193, 29);
 		frmEagleTree.getContentPane().add(btnAddNewGraphics);
-		
+		*/
 		JButton btnGame = new JButton("GAME");
 		btnGame.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -1304,42 +1277,6 @@ public class dem {
 		btnNewButton.setBounds(6, 367, 938, 187);
 		frmEagleTree.getContentPane().add(btnNewButton);
 		
-		/*JLabel lblWorkload = new JLabel("Workload");
-		lblWorkload.setHorizontalAlignment(SwingConstants.CENTER);
-		lblWorkload.setFont(new Font("Lucida Grande", Font.BOLD, 15));
-		lblWorkload.setBounds(780, 191, 164, 19);
-		frmEagleTree.getContentPane().add(lblWorkload);*/
-		
-		/*JScrollPane scrollPane_9 = new JScrollPane();
-		scrollPane_9.setBounds(780, 215, 164, 99);
-		frmEagleTree.getContentPane().add(scrollPane_9);
-		
-		JList list_6 = new JList();
-		list_6.setEnabled(false);
-		scrollPane_9.setViewportView(list_6);
-		list_6.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		list_6.setModel(new AbstractListModel() {
-			String[] values = new String[] {"Workload 1", "Workload 2", "Workload 3", "Workload 4"};
-			public int getSize() {
-				return values.length;
-			}
-			public Object getElementAt(int index) {
-				return values[index];
-			}
-		});
-		list_6.setSelectedIndex(0);*/
-		
-		/*JButton btnAddNewWorkload = new JButton("Load settings");
-		btnAddNewWorkload.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				loadConfig();
-			}
-		});
-		btnAddNewWorkload.setBounds(790, 135, 148, 29);
-		frmEagleTree.getContentPane().add(btnAddNewWorkload);
-		*/
-		//JButton button = new JButton("<html>Hello<p>World</html>");
-		
 		JButton button = new JButton("load results");
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -1361,14 +1298,14 @@ public class dem {
 		lblGraphicalResults.setBounds(6, 566, 446, 19);
 		frmEagleTree.getContentPane().add(lblGraphicalResults);
 		
-		JLabel lblRecordedGraphics = new JLabel("Recorded graphics");
+		JLabel lblRecordedGraphics = new JLabel("Supporting graphics");
 		lblRecordedGraphics.setHorizontalAlignment(SwingConstants.CENTER);
 		lblRecordedGraphics.setFont(new Font("Lucida Grande", Font.BOLD, 15));
-		lblRecordedGraphics.setBounds(464, 566, 193, 19);
+		lblRecordedGraphics.setBounds(480, 566, 446, 19);
 		frmEagleTree.getContentPane().add(lblRecordedGraphics);
 		
-		JList<String> list_graphics = new JList<String>();
-		list_graphics.setBounds(669, 574, 275, 80);
+		list_graphics = new JList<String>();
+		list_graphics.setBounds(564, 606, 275, 57);
 		frmEagleTree.getContentPane().add(list_graphics);
 		list_graphics.setModel(new AbstractListModel<String>() {
 			String[] values = new String[] {"Relative latencies", "throughput"};
@@ -1382,9 +1319,8 @@ public class dem {
 		
 		list_graphics.addMouseListener(new MouseAdapter() {
 		    public void mouseClicked(MouseEvent evt) {
-		        JList list = (JList)evt.getSource();
 		        if (evt.getClickCount() == 2) {
-		            int index = list.locationToIndex(evt.getPoint());
+		            int index = list_graphics.locationToIndex(evt.getPoint());
 		            String graphTitle; // = list.getModel().getElementAt(index).toString();
 		            if (index == 0) {
 		            	graphTitle = "src/latencies.png";
@@ -1399,9 +1335,13 @@ public class dem {
 		list_graphics.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		list_graphics.setSelectedIndex(0);
 		
+
+		
 		JPanel panel_6 = new JPanel();
 		panel_6.setBackground(new Color(250, 235, 215));
 		panel_6.setBounds(6, 566, 953, 99);
 		frmEagleTree.getContentPane().add(panel_6);
+		
+
 	}
 }
