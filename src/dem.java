@@ -1367,18 +1367,19 @@ public class dem {
 		lblRecordedGraphics.setBounds(464, 566, 193, 19);
 		frmEagleTree.getContentPane().add(lblRecordedGraphics);
 		
-		JList list_graphics = new JList();
+		JList<String> list_graphics = new JList<String>();
 		list_graphics.setBounds(669, 574, 275, 80);
 		frmEagleTree.getContentPane().add(list_graphics);
-		list_graphics.setModel(new AbstractListModel() {
-			String[] values = new String[] {"reads latency", "deadline writes latency", "throughput"};
+		list_graphics.setModel(new AbstractListModel<String>() {
+			String[] values = new String[] {"Relative latencies", "throughput"};
 			public int getSize() {
 				return values.length;
 			}
-			public Object getElementAt(int index) {
+			public String getElementAt(int index) {
 				return values[index];
 			}
 		});
+		
 		list_graphics.addMouseListener(new MouseAdapter() {
 		    public void mouseClicked(MouseEvent evt) {
 		        JList list = (JList)evt.getSource();
@@ -1386,9 +1387,7 @@ public class dem {
 		            int index = list.locationToIndex(evt.getPoint());
 		            String graphTitle; // = list.getModel().getElementAt(index).toString();
 		            if (index == 0) {
-		            	graphTitle = "src/deadlines_read_latency_mean.png";
-		            } else if (index == 1) {
-		            	graphTitle = "src/deadlines_writes_latency_mean.png";
+		            	graphTitle = "src/latencies.png";
 		            } else {
 		            	graphTitle = "src/throughput.png";
 		            }
