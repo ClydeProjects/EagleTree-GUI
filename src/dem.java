@@ -1390,7 +1390,7 @@ public class dem {
 		            } else if (index == 1) {
 		            	graphTitle = "src/deadlines_writes_latency_mean.png";
 		            } else {
-		            	graphTitle = "";
+		            	graphTitle = "src/throughput.png";
 		            }
 		            new graphW(graphTitle);
 		        } 
