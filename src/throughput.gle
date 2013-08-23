@@ -1,0 +1,14 @@
+size 32 16
+include "graphutil.gle"
+set font texcmr
+set hei 0.75
+begin graph
+   key pos br nobox offset -0.0 0 compact
+   scale auto
+   title  "Throughput with respect to Writes Deadline"
+   xtitle "Writes deadline (µs)"
+   ytitle "Average throughput (IOs/s)"
+   data   "/home/niv/Desktop/EagleTree/exp_deadlines/deadlines/Global/stats.csv" d1=c1,c27
+   d1 line color blue marker circle key "deadlines"
+   yaxis min 0 max dmaxy(d1)*1.05 
+end graph
