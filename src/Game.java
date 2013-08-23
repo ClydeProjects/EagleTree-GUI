@@ -1,3 +1,4 @@
+import java.awt.Dimension;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -11,6 +12,8 @@ import javax.swing.JButton;
 
 import java.awt.Color;
 
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.JSlider;
@@ -27,14 +30,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 
 import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.JTableHeader;
 import javax.swing.JScrollBar;
 import javax.swing.JToggleButton;
-
 
 public class Game {
 
@@ -49,10 +53,8 @@ public class Game {
 	private JButton btnNewButton;
 	private JTextPane txtpns;
 	private JSlider slider;
-	private JTextPane txtpnDimitriosGunopulosUniversity;
-	private JTextPane txtpnXXX;
-	private JTextPane txtpnXXX_1; 
-	private JTextPane txtpnXXX_2;
+	private TableModel results = new TableModel();
+	private JTable table;
 
 	private int readLatency = 100;
 	private int writeLatency = 200;
@@ -164,7 +166,7 @@ public class Game {
 			out.print("\tPLANE_SIZE 512\n");
 			out.print("\tBLOCK_SIZE 128\n");
 			out.print("\tPAGE_SIZE 16\n");
-			out.print("\tMAX_SSD_QUEUE_SIZE 64\n");
+			out.print("\tMAX_SSD_QUEUE_SIZE 32\n");
 			out.print("\tOVER_PROVISIONING_FACTOR 0.7\n");
 
 			out.print("#Operation timings\n");
@@ -218,16 +220,9 @@ public class Game {
 	private void initialize() {
 		frmEagletreeThe = new JFrame();
 		frmEagletreeThe.setTitle("EagleTree - The game");
-		frmEagletreeThe.setBounds(100, 100, 574, 562);
+		frmEagletreeThe.setBounds(100, 100, 700, 562);
 		frmEagletreeThe.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frmEagletreeThe.getContentPane().setLayout(null);
-
-		JTextPane txtpnHiddenHiddenHidden = new JTextPane();
-		txtpnHiddenHiddenHidden.setEnabled(false);
-		txtpnHiddenHiddenHidden.setText(" Hidden\n Hidden\n Hidden\n Hidden");
-		txtpnHiddenHiddenHidden.setBorder(new LineBorder(new Color(0, 0, 0)));
-		txtpnHiddenHiddenHidden.setBounds(348, 354, 59, 142);
-		frmEagletreeThe.getContentPane().add(txtpnHiddenHiddenHidden);
 
 		JTextPane txtpnInThisGame = new JTextPane();
 		txtpnInThisGame.setForeground(Color.BLUE);
@@ -242,12 +237,6 @@ public class Game {
 		lblGoal.setFont(new Font("Lucida Grande", Font.BOLD, 15));
 		lblGoal.setBounds(262, 5, 59, 19);
 		frmEagletreeThe.getContentPane().add(lblGoal);
-
-		txtpnDimitriosGunopulosUniversity = new JTextPane();
-		txtpnDimitriosGunopulosUniversity.setBorder(new LineBorder(new Color(0, 0, 0)));
-		txtpnDimitriosGunopulosUniversity.setText("Anna\nOscar\nTheo\nClara\n");
-		txtpnDimitriosGunopulosUniversity.setBounds(267, 354, 82, 142);
-		frmEagletreeThe.getContentPane().add(txtpnDimitriosGunopulosUniversity);
 
 		JLabel lblResults = new JLabel("Registered scores");
 		lblResults.setForeground(Color.RED);
@@ -453,14 +442,18 @@ public class Game {
 			public void actionPerformed(ActionEvent arg0) {
 				String name = txtGautamDas.getText().trim();
 				if (name.compareTo("") != 0) {
-					String readLatencies = txtpnXXX.getText() + readLatency + "\n";
+					/*String readLatencies = txtpnXXX.getText() + readLatency + "\n";
 					String writeLatencies = txtpnXXX_1.getText() + writeLatency + "\n";
 					String throughputs = txtpnXXX_2.getText() + throughput + "\n";
 
 					txtpnXXX.setText(readLatencies);
 					txtpnXXX_1.setText(writeLatencies);
-					txtpnXXX_2.setText(throughputs);
-				}				
+					txtpnXXX_2.setText(throughputs);*/
+				}
+				results.addRow(name, readLatency, writeLatency, throughput);
+				table.revalidate();
+				table.repaint();
+				results.fireTableDataChanged();
 			}
 		});
 		btnRegister.setHorizontalAlignment(SwingConstants.LEFT);
@@ -487,36 +480,8 @@ public class Game {
 		JSeparator separator = new JSeparator();
 		separator.setForeground(Color.BLUE);
 		separator.setOrientation(SwingConstants.VERTICAL);
-		separator.setBounds(245, 0, 17, 527);
+		separator.setBounds(262, 7, 17, 527);
 		frmEagletreeThe.getContentPane().add(separator);
-
-		txtpnXXX = new JTextPane();
-		txtpnXXX.setBorder(new LineBorder(new Color(0, 0, 0)));
-		txtpnXXX.setText("950\n1020\n890\n1300\n");
-		txtpnXXX.setBounds(406, 354, 36, 142);
-		frmEagletreeThe.getContentPane().add(txtpnXXX);
-
-		txtpnXXX_1 = new JTextPane();
-		txtpnXXX_1.setText("1100\n1210\n1800\n2100\n");
-		txtpnXXX_1.setBorder(new LineBorder(new Color(0, 0, 0)));
-		txtpnXXX_1.setBounds(441, 354, 36, 142);
-		frmEagletreeThe.getContentPane().add(txtpnXXX_1);
-
-		txtpnXXX_2 = new JTextPane();
-		txtpnXXX_2.setText(" 300\n 335\n 530\n 450");
-		txtpnXXX_2.setBorder(new LineBorder(new Color(0, 0, 0)));
-		txtpnXXX_2.setBounds(476, 354, 36, 142);
-		frmEagletreeThe.getContentPane().add(txtpnXXX_2);
-
-		JTextPane txtpnXXX_3 = new JTextPane();
-		txtpnXXX_3.setText(" 180\n 147\n 155\n 120");
-		txtpnXXX_3.setBorder(new LineBorder(new Color(0, 0, 0)));
-		txtpnXXX_3.setBounds(511, 354, 36, 142);
-		frmEagletreeThe.getContentPane().add(txtpnXXX_3);
-
-		JScrollBar scrollBar = new JScrollBar();
-		scrollBar.setBounds(546, 354, 15, 142);
-		frmEagletreeThe.getContentPane().add(scrollBar);
 
 		JTextPane txtpnForThisExperiment = new JTextPane();
 		txtpnForThisExperiment.setForeground(Color.BLUE);
@@ -546,7 +511,18 @@ public class Game {
 		txtpnBestYourScore.setBounds(413, 192, 120, 37);
 		frmEagletreeThe.getContentPane().add(txtpnBestYourScore);
 
-		JTextPane txtpnRlWlV = new JTextPane();
+		table = new JTable(results);
+		JScrollPane tableScrollPane = new JScrollPane(table);
+		tableScrollPane.setBounds(300, 339, 400, 200);
+		//table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		JTableHeader header = table.getTableHeader();
+		header.setPreferredSize(new Dimension(100, 40));
+		//header.setBackground(Color.yellow);
+		frmEagletreeThe.getContentPane().add(tableScrollPane);
+
+
+
+		/*JTextPane txtpnRlWlV = new JTextPane();
 		txtpnRlWlV.setFont(new Font("Lucida Grande", Font.BOLD, 13));
 		txtpnRlWlV.setText("STRAT.    RL     WL     V      T");
 		txtpnRlWlV.setBackground(UIManager.getColor("Button.background"));
@@ -555,23 +531,30 @@ public class Game {
 
 		JToggleButton tglbtnNewToggleButton = new JToggleButton("Show scheduling strategie");
 		tglbtnNewToggleButton.setBounds(262, 503, 299, 29);
-		frmEagletreeThe.getContentPane().add(tglbtnNewToggleButton);
+		frmEagletreeThe.getContentPane().add(tglbtnNewToggleButton);*/
 	}
 
 	class TableModel extends AbstractTableModel {
 
-		//Two arrays used for the table data
-		String[] columnNames = {"First Name", "Reads", "Writes", "Throughput" };
+		//Two arrays used for the table data     namename
+		String[] columnNames = {"Name", "<HTML>Avg Read <BR>Latency (\u03BCs)</HTML>", "<HTML>Avg Write <BR>Latency (\u03BCs)</HTML>", "<HTML>Throughput<BR>(IO/s)</HTML>" };
 
-		Object[][] data = {
-				{"Bob", "33", "33", "33" },
-				{"John", "33", "33", "33" },
-		};
+		ArrayList<String[]> data = new ArrayList<String[]>();
+
+		public TableModel() {
+			String[] row = {"bob", "10", "20", "30" };
+			data.add(row);
+		}
+
+		public void addRow(String name, int readLatency, int writeLatency, int throughput) {
+			String[] row = { name, readLatency + "", writeLatency + "", throughput + "" };
+			data.add(row);
+		}
 
 		@Override
 		public int getRowCount()
 		{
-			return data.length;
+			return data.size();
 		}
 
 		@Override
@@ -583,7 +566,7 @@ public class Game {
 		@Override
 		public Object getValueAt(int row, int column)
 		{        
-			return data[row][column];
+			return data.get(row)[column];
 		}
 
 		//Used by the JTable object to set the column names
@@ -600,11 +583,19 @@ public class Game {
 		}
 
 		@Override
+		public void setValueAt(Object aValue, int row, int col) {
+			if (col == 0) {
+				data.get(row)[0] = aValue.toString();
+				this.fireTableCellUpdated(row, col);
+			}
+		}
+
+		@Override
 		public boolean isCellEditable(int row, int column)
 		{
-			if (column == 0 || column == 1)
+			if (column == 0)
 			{
-				return false;
+				return true;
 			}
 			else
 			{
