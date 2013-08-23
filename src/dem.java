@@ -1081,10 +1081,10 @@ public class dem {
 		JLabel lblMean = new JLabel("Mean");
 		panel_5.add(lblMean, "4, 2, center, default");
 		
-		JLabel lblMax = new JLabel("Max");
+		JLabel lblMax = new JLabel("Std");
 		panel_5.add(lblMax, "6, 2, center, default");
 		
-		JLabel lblStd = new JLabel("Std");
+		JLabel lblStd = new JLabel("Max");
 		panel_5.add(lblStd, "8, 2, center, default");
 		
 		JLabel lblReadLatency = new JLabel("Read latency");
