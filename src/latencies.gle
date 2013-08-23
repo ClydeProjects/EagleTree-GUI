@@ -1,0 +1,16 @@
+size 32 16
+include "graphutil.gle"
+set font texcmr
+set hei 0.75
+begin graph
+   key pos br offset -0.0 0
+   scale auto
+   title  "Impact of Write Deadline on Avg Read and Write Latencies"
+   xtitle "Writes deadline (µs)"
+   ytitle "mean latency (µs)"
+   data   "/home/niv/Desktop/EagleTree/exp_deadlines/deadlines/Global/stats.csv" d1=c1,c10
+   d1 line color red marker circle key "writes"
+   data   "/home/niv/Desktop/EagleTree/exp_deadlines/deadlines/Global/stats.csv" d2=c1,c17
+   d2 line color blue marker square key "reads"
+   yaxis min 0 max dmaxy(d2)*1.05 
+end graph
